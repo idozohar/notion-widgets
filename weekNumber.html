@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week number</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #191919;   /* Notion dark mode background */
+    color: #e6e6e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  #num { font-size: 40px; font-weight: 700; }
+  #range { font-size: 15px; color: #9b9b9b; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <div id="num"></div>
+  <div id="range"></div>
+
+<script>
+  // ISO week number; a Sunday counts with the week that starts that day (Sun–Sat week)
+  function weekNumber(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    if (date.getUTCDay() === 0) date.setUTCDate(date.getUTCDate() + 1);
+    var day = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - day);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+  }
+
+  function render() {
+    var now = new Date();
+    var sunday = new Date(now);
+    sunday.setDate(now.getDate() - now.getDay());
+    var saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 6);
+    var fmt = { day: "numeric", month: "short" };
+    document.getElementById("num").textContent = "Week " + weekNumber(now);
+    document.getElementById("range").innerHTML =
+      sunday.toLocaleDateString("en-GB", fmt) + " – " +
+      saturday.toLocaleDateString("en-GB", fmt) + "<br>" + now.getFullYear();
+  }
+
+  render();
+  setInterval(render, 60 * 1000); // stays correct if the page is left open
+</script>
+</body>
+</html>
